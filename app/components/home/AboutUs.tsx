@@ -1,0 +1,56 @@
+import ScrollReveal from "../ScrollReveal";
+import "./AboutUs.css";
+
+// IMPORTACIÓN DE ASSETS
+import bgSpace from "../../assets/3.png"; 
+import logoImg from "../../assets/aliensKaab-blanco.png"; 
+import characterImg from "../../assets/logo.png"; 
+
+const aboutText = `En un mundo donde todo se acelera y se industrializa, Aliens Kaab sigue un camino distinto: el de la paciencia, la autenticidad y la pureza. Nuestro hidromiel no es producto de fórmulas estandarizadas ni de procesos artificiales. Cada botella es única, fermentada con miel pura y el tiempo necesario para desarrollar sus matices sin prisas ni atajos.
+
+Así como no hay dos estrellas iguales en el universo, no hay dos lotes idénticos de nuestro hidromiel. La miel con la que fermentamos cambia según la temporada, la floración y la región, haciendo que cada producción sea irrepetible.
+
+Creemos que esta variabilidad es un tesoro, una prueba de que lo mejor de la naturaleza no necesita ser alterado. Cuando abres una botella de Aliens Kaab, estás probando algo real, sin artificios, sin químicos y sin manipulaciones. Es la esencia de la miel, transformada en hidromiel de la forma en que debería ser: pura, vibrante y con el alma intacta.`;
+
+export default function AboutUs() {
+  return (
+    <section className="about-section" id="about">
+      {/* FONDO ESPACIAL */}
+      <img src={bgSpace} alt="Espacio" className="about-bg" />
+
+      <div className="about-container">
+        
+        {/* COLUMNA IZQUIERDA: TEXTO Y CRISTAL */}
+        <div className="about-text-col">
+          {/* Logo animado que pisa el cuadro */}
+          <ScrollReveal delay={0.2} style={{ position: "relative", zIndex: 30, width: "100%" }}>
+            <img src={logoImg} alt="Aliens Kaab" className="about-logo" />
+          </ScrollReveal>
+
+          {/* Panel de Cristal */}
+          <ScrollReveal delay={0.3}>
+            <div className="about-glass-panel">
+              {aboutText.split("\n\n").map((paragraph, index) => (
+                <p className="about-text" key={index}>
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </ScrollReveal>
+        </div>
+
+        {/* COLUMNA DERECHA / ABAJO: PERSONAJE */}
+        <div className="about-image-col">
+          <ScrollReveal delay={0.5}>
+            <img 
+              src={characterImg} 
+              alt="Personaje Aliens Kaab" 
+              className="about-character" 
+            />
+          </ScrollReveal>
+        </div>
+
+      </div>
+    </section>
+  );
+}

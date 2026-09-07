@@ -1,0 +1,171 @@
+/* ========================================== */
+/* SECCIÓN ABOUT US                           */
+/* ========================================== */
+.about-section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: #000;
+  padding: 12vh 0;
+}
+
+/* FONDO ESPACIAL */
+.about-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+  opacity: 0.6;
+}
+
+/* CONTENEDOR PRINCIPAL */
+.about-container {
+  position: relative;
+  z-index: 10;
+  width: 90vw;
+  max-width: 1300px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+}
+
+/* ========================================== */
+/* COLUMNA DE TEXTO Y CRISTAL                 */
+/* ========================================== */
+.about-text-col {
+  position: relative;
+  flex: 1.2;
+  max-width: 750px;
+  width: 100%;
+}
+
+/* EL LOGO QUE PISA Y QUEDA ENCIMA DEL RECUADRO */
+.about-logo {
+  position: absolute;
+  z-index: 30; /* ¡Garantiza que siempre quede encimado sobre el cristal! */
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.7));
+  pointer-events: none;
+}
+
+/* EL PANEL EFECTO CRISTAL (GLASSMORPHISM) */
+.about-glass-panel {
+  position: relative;
+  background: rgba(20, 20, 25, 0.45);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 28px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255,255,255,0.05);
+  color: #f5f5f5;
+  z-index: 10;
+}
+
+.about-text {
+  font-family: var(--font-body), sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.75;
+  margin-bottom: 1.5rem;
+  text-align: justify;
+}
+
+.about-text:last-child {
+  margin-bottom: 0;
+}
+
+/* ========================================== */
+/* COLUMNA DEL PERSONAJE (ABEJA GIGANTE)      */
+/* ========================================== */
+.about-image-col {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+}
+
+.about-character {
+  width: 100%;
+  max-width: 580px; /* Abeja mucho más grande en escritorio */
+  object-fit: contain;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.8));
+  will-change: transform;
+}
+
+/* ========================================== */
+/* DISEÑO PARA PC / TABLETS                   */
+/* ========================================== */
+@media (min-width: 768px) {
+  .about-logo {
+    top: -55px;
+    left: -35px; /* Invasión amplia sobre la esquina superior izquierda */
+    width: 480px; /* Logo más grande */
+  }
+  
+  .about-glass-panel {
+    margin-top: 40px;
+    padding: 5.5rem 3.5rem 3.5rem 3.5rem;
+  }
+}
+
+/* ========================================== */
+/* DISEÑO PARA CELULARES (PERFECTAMENTE CENTRADO) */
+/* ========================================== */
+@media (max-width: 767px) {
+  .about-container {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 92vw;
+    gap: 0;
+  }
+
+  .about-text-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Centrado absoluto del logo sobre la parte superior */
+  .about-logo {
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%); /* Centrado matemático */
+    width: 320px; /* Logo grande en móvil */
+    max-width: 88vw;
+    z-index: 30;
+  }
+
+  .about-glass-panel {
+    width: 100%;
+    margin-top: 45px;
+    padding: 4.5rem 1.5rem 6.5rem 1.5rem; /* Padding inferior para dar paso a la abeja */
+    text-align: left;
+  }
+
+  .about-text {
+    font-size: 0.98rem;
+    line-height: 1.65;
+  }
+
+  /* Centrado y sobreposición de la abeja */
+  .about-image-col {
+    width: 100%;
+    margin-top: -90px; /* Sube la abeja para pisar el cuadro de texto */
+    z-index: 25;
+  }
+
+  .about-character {
+    width: 90vw;
+    max-width: 380px; /* Abeja significativamente más grande en celular */
+    margin: 0 auto;
+    display: block;
+  }
+}
