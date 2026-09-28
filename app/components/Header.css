@@ -1,53 +1,305 @@
 /*
 * --------------------------------------------------
-* components/Header
+* components/Header - Redesigned to match AlienskaabFront style
 * --------------------------------------------------
 */
-.header {
-    align-items: center;
-    background: #2f41b2;
-    display: flex;
-    height: var(--header-height);
-    padding: 0 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 1;
+:root {
+  /* AlienskaabFront design tokens adapted for Shopify */
+  --color-bg: #0a0a0b;
+  --color-bg-elevated: #141416;
+  --color-bg-card: #1a1a1e;
+  --color-border: #2a2a30;
+  --color-border-subtle: #1f1f24;
+
+  /* Texto */
+  --color-text: #a8a8b0;
+  --color-text-muted: #6b6b75;
+  --color-text-heading: #f5f0e8;
+
+  /* Secundarios */
+  --color-shell: #f5f0e8;
+  --color-yellow: #e8d48a;
+  --color-green: #8fb89a;
+  --color-blue: #8eb4d4;
+  --color-purple: #b49fd4;
+
+  /* Acentos espaciales */
+  --color-accent: #e8a04a;
+  --color-accent-glow: rgba(232, 160, 74, 0.35);
+
+  /* Tipografía */
+  --font-heading: "Poppins", system-ui, sans-serif;
+  --font-body: "Fiona", "Cormorant Garamond", Georgia, serif;
+
+  /* Espaciado */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --space-2xl: 6rem;
+
+  /* Layout */
+  --max-width: 1200px;
+  --header-height: 2rem;
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 999px;
+  --radius-pill: 999px;
+
+  /* Transiciones */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  z-index: 9999;
+  padding-block: 0.5rem;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.site-header__inner {
+  width: min(100% - 2rem, var(--max-width));
+  height: 50px;
+  margin-inline: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: transparent;
+  padding: 0.5rem 1rem;
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius-pill);
+
+}
+
+.site-header__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 1.15rem;
+  letter-spacing: 0.2em;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-heading);
+}
+
+.site-header__logo-img {
+  width: 1.8rem;
+  height: 1.8rem;
+  object-fit: contain;
+  display: block;
+}
+
+.site-header__nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem;
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  font-size: 0.75rem;
+}
+
+.site-header__link {
+  padding: 0.55rem 0.8rem;
+  border-radius: 999px;
+  color: var(--color-text-muted);
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.site-header__link:hover,
+.site-header__link--active {
+  background: rgba(245, 240, 232, 0.12);
+  color: var(--color-shell);
+
+}
+
+/* Botón de CTA (como el de "Contacto" en AlienskaabFront) */
+.btn--shell {
+  display: inline-flex;
+  height: 2.75rem;
+  padding: 0.5rem 1.125rem;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.125em;
+  text-transform: uppercase;
+  color: var(--color-text-heading);
+  background-color: transparent;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  text-decoration: none;
+  line-height: 1.5;
+  transition:
+    background-color 150ms var(--ease-out),
+    border-color 150ms var(--ease-out),
+    color 150ms var(--ease-out);
+}
+
+.btn--shell:hover {
+  background-color: var(--color-border);
+  color: var(--color-shell);
+}
+
+/* -------------------------------------------
+   ESTILOS DEL BOTÓN (OCULTO EN ESCRITORIO)
+------------------------------------------- */
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Las líneas de la hamburguesa */
+.hamburger-line {
+  width: 1.8rem;
+  height: 2px;
+  background-color: var(--color-text-muted);
+  border-radius: 2px;
+  margin: 3px 0;
+  transition: all 0.2s ease;
+}
+
+/* -------------------------------------------
+   AJUSTES PARA DISPOSITIVOS MÓVILES
+------------------------------------------- */
+@media (max-width: 768px) {
+
+  /* Contenedor principal en móviles */
+  .site-header__inner {
+    position: relative;
+    justify-content: center;
+    /* Mantiene el logo al centro cuando está cerrado */
+    transition: all 0.3s ease;
+  }
+
+  /* Diseño del botón hamburguesa */
+  .mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 1.8rem;
+    height: 1.2rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    position: absolute;
+    left: 1rem;
+    /* Centrado vertical perfecto cuando está cerrado */
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+  }
+
+  /*
+    ESTADO CERRADO:
+    Ocultamos las opciones de navegación y el botón de contacto.
+    El logo permanecerá visible al centro.
+  */
+  .site-header__inner:not(.is-open) .site-header__nav,
+  .site-header__inner:not(.is-open) .btn--shell {
+    display: none;
+  }
+
+  /*
+    ESTADO ABIERTO:
+    Apilamos todo en columna (Logo -> Opciones -> Contacto).
+  */
+  .site-header__inner.is-open {
+    flex-direction: column;
+    align-items: stretch;
+    padding-top: 2.5rem;
+    /* Genera espacio para que el botón no tape el logo */
+    padding-bottom: 2rem;
+    gap: 1.5rem;
+    border-radius: 20px;
+    background: rgba(17, 17, 17, 0.95);
+  }
+
+  /* Fija el botón arriba a la izquierda cuando el menú crece */
+  .site-header__inner.is-open .mobile-menu-btn {
+    top: 1.5rem;
+    transform: none;
+  }
+
+  .site-header__inner.is-open .site-header__nav,
+  .site-header__inner.is-open .btn--shell {
+    display: block;
+    width: 100%;
+  }
+
+  /* Estilos para los enlaces en el menú móvil */
+  .site-header__inner.is-open .site-header__nav {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .site-header__inner.is-open .site-header__link {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem 1rem;
+  }
+
+  /* Estilo para el botón CTA en móvil */
+  .site-header__inner.is-open .btn--shell {
+    width: 100%;
+    text-align: center;
+    padding: 0.875rem;
+    margin-top: 1rem;
+  }
+}
+
+/* Mantener algunos estilos originales del Header para compatibilidad */
 .header-menu-mobile-toggle {
-    @media (min-width: 48em) {
-        display: none;
-    }
+  @media (min-width: 48em) {
+    display: none;
+  }
 }
 
 .header-menu-mobile {
-    display: flex;
-    flex-direction: column;
-    grid-gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  grid-gap: 1rem;
 }
 
 .header-menu-desktop {
-    display: none;
-    grid-gap: 1rem;
+  display: none;
+  grid-gap: 1rem;
 
-    @media (min-width: 45em) {
-        display: flex;
-        grid-gap: 1rem;
-        margin-left: 3rem;
-    }
+  @media (min-width: 45em) {
+    display: flex;
+    grid-gap: 1rem;
+    margin-left: 3rem;
+  }
 }
 
 .header-menu-item {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .header-ctas {
-    align-items: center;
-    display: flex;
-    grid-gap: 1rem;
-    margin-left: auto;
+  align-items: center;
+  display: flex;
+  grid-gap: 1rem;
+  margin-left: auto;
 }
 
 .header-ctas>* {
-    min-width: fit-content;
+  min-width: fit-content;
 }

@@ -16,6 +16,7 @@ export default function AwardsPreview() {
         </ScrollReveal>
       </div>
       <div style={{ width: '100%', maxWidth: '100%', height: '100vh' }}>
+        {/* OPTIMIZADO: Usando imágenes WebP en DomeGallery */}
         <DomeGallery
           fit={1}
           minRadius={1000}

@@ -1,5 +1,5 @@
-import { Suspense } from 'react';
-import { Await, NavLink, useAsyncValue } from 'react-router';
+import { Suspense, useState } from 'react';
+import { Await, NavLink, useAsyncValue, Link } from 'react-router';
 import {
   type CartViewPayload,
   useAnalytics,
@@ -25,18 +25,102 @@ export function Header({
   publicStoreDomain,
 }: HeaderProps) {
   const { shop, menu } = header;
+  const { open } = useAside();
+
+  // Estado para controlar el despliegue del menú en móviles (similar a AlienskaabFront)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
-    <header className="header">
-      <NavLink prefetch="intent" to="/" style={activeLinkStyle} end>
-        <strong>{shop.name}</strong>
-      </NavLink>
-      <HeaderMenu
-        menu={menu}
-        viewport="desktop"
-        primaryDomainUrl={header.shop.primaryDomain.url}
-        publicStoreDomain={publicStoreDomain}
-      />
-      <HeaderCtas isLoggedIn={isLoggedIn} cart={cart} />
+    <header className="site-header">
+      {/* Se añade la clase 'is-open' condicionalmente */}
+      <div className={`site-header__inner ${isMenuOpen ? "is-open" : ""}`}>
+
+        {/* Botón de menú hamburguesa (arriba a la izquierda) */}
+        <button
+          className="mobile-menu-btn"
+          onClick={toggleMenu}
+          aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
+        >
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+          <span className="hamburger-line"></span>
+        </button>
+
+        {/* Logo */}
+        <NavLink
+          to="/"
+          className="site-header__logo"
+          aria-label={`${shop.name} home`}
+          onClick={closeMenu}
+          prefetch="intent"
+        >
+          <strong>{shop.name}</strong>
+        </NavLink>
+
+        {/* Navegación */}
+        <nav className="site-header__nav" aria-label="Principal">
+          {(menu || FALLBACK_HEADER_MENU).items.map((item) => {
+            if (!item.url) return null;
+
+            // if the url is internal, we strip the domain
+            const url =
+              item.url.includes('myshopify.com') ||
+                item.url.includes(publicStoreDomain) ||
+                item.url.includes(header.shop.primaryDomain.url)
+                ? new URL(item.url).pathname
+                : item.url;
+
+            return (
+              <NavLink
+                key={item.id}
+                to={url}
+                className={({ isActive }) =>
+                  `site-header__link${isActive ? " site-header__link--active" : ""}`
+                }
+                end={url === "/"}
+                onClick={() => {
+                  closeMenu();
+                  close();
+                }} // Cierra el menú al navegar
+                prefetch="intent"
+              >
+                {item.title}
+              </NavLink>
+            );
+          })}
+        </nav>
+
+
+
+        {/* Carrito y búsqueda (manteniendo funcionalidad existente) */}
+        <div className="header-ctas">
+          {/* Botón de contacto/CTA */}
+          <Suspense fallback="Sign in">
+            <Await resolve={isLoggedIn} errorElement="Sign in">
+              {(isLoggedIn) => (
+                <Link
+                  to="/account"
+                  className="btn btn--shell"
+                  onClick={() => {
+                    closeMenu();
+                    close();
+                  }}
+                  prefetch="intent"
+                >
+                  Account
+                </Link>
+              )}
+            </Await>
+          </Suspense>
+          <HeaderMenuMobileToggle />
+          <SearchToggle />
+          <CartToggle cart={cart} />
+
+
+        </div>
+      </div>
     </header>
   );
 }

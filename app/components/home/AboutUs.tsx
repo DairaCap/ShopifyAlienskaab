@@ -1,10 +1,10 @@
 import ScrollReveal from "../ScrollReveal";
 import "./AboutUs.css";
 
-// IMPORTACIÓN DE ASSETS
-import bgSpace from "../../assets/3.png"; 
-import logoImg from "../../assets/aliensKaab-blanco.png"; 
-import characterImg from "../../assets/logo.png"; 
+// IMPORTACIÓN DE ASSETS - OPTIMIZADO: Usando WebP donde sea posible
+import bgSpace from "../../assets/webp/3.webp"; 
+import logoImg from "../../assets/webp/aliensKaab-blanco.webp"; 
+import characterImg from "../../assets/webp/logo.webp"; 
 
 const aboutText = `En un mundo donde todo se acelera y se industrializa, Aliens Kaab sigue un camino distinto: el de la paciencia, la autenticidad y la pureza. Nuestro hidromiel no es producto de fórmulas estandarizadas ni de procesos artificiales. Cada botella es única, fermentada con miel pura y el tiempo necesario para desarrollar sus matices sin prisas ni atajos.
 
@@ -19,7 +19,7 @@ export default function AboutUs() {
       <img src={bgSpace} alt="Espacio" className="about-bg" />
 
       <div className="about-container">
-        
+
         {/* COLUMNA IZQUIERDA: TEXTO Y CRISTAL */}
         <div className="about-text-col">
           {/* Logo animado que pisa el cuadro */}
@@ -42,10 +42,10 @@ export default function AboutUs() {
         {/* COLUMNA DERECHA / ABAJO: PERSONAJE */}
         <div className="about-image-col">
           <ScrollReveal delay={0.5}>
-            <img 
-              src={characterImg} 
-              alt="Personaje Aliens Kaab" 
-              className="about-character" 
+            <img
+              src={characterImg}
+              alt="Personaje Aliens Kaab"
+              className="about-character"
             />
           </ScrollReveal>
         </div>

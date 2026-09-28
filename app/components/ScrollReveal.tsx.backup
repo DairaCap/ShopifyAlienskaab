@@ -1,0 +1,53 @@
+import { useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+type ScrollRevealProps = {
+  children: React.ReactNode;
+  className?: string;
+  as?: keyof HTMLElementTagNameMap;
+  delay?: number;
+  style?: React.CSSProperties; // <-- 1. Le decimos a TS que acepte estilos
+};
+
+export default function ScrollReveal({
+  children,
+  className = "",
+  as: Tag = "div",
+  delay = 0,
+  style, // <-- 2. Desestructuramos la prop
+}: ScrollRevealProps) {
+  const ref = useRef<HTMLElement>(null);
+
+  useGSAP(
+    () => {
+      const el = ref.current;
+      if (!el) return;
+
+      gsap.from(el, {
+        y: 48,
+        opacity: 0,
+        duration: 0.9,
+        delay,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: el,
+          start: "top 85%",
+          toggleActions: "play none none reverse",
+        },
+      });
+    },
+    { scope: ref },
+  );
+
+  return (
+    // @ts-expect-error dynamic tag ref
+    // <-- 3. Inyectamos el style en el Tag
+    <Tag ref={ref} className={`scroll-reveal ${className}`.trim()} style={style}>
+      {children}
+    </Tag>
+  );
+}

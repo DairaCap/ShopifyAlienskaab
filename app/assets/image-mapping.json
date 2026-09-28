@@ -1,0 +1,62 @@
+{
+  "hero": {
+    "1": "app/assets/webp/gallery/1.webp",
+    "2": "app/assets/webp/gallery/2.webp",
+    "3": "app/assets/webp/gallery/3.webp",
+    "4": "app/assets/webp/gallery/4.webp",
+    "5": "app/assets/webp/gallery/5.webp",
+    "6": "app/assets/webp/gallery/6.webp",
+    "AlienBlood": "app/assets/webp/AlienBlood.webp",
+    "LuzDeEstrella": "app/assets/webp/LuzDeEstrella.webp",
+    "aliensKaab-blanco": "app/assets/webp/aliensKaab-blanco.webp",
+    "alienskaab-negro": "app/assets/webp/alienskaab-negro.webp",
+    "dripGalaxy": "app/assets/webp/dripGalaxy.webp",
+    "escenario": "app/assets/webp/escenario.webp",
+    "fondoEspacial": "app/assets/webp/fondoEspacial.webp",
+    "galaxy": "app/assets/webp/galaxy.webp",
+    "glassAlienBlood": "app/assets/webp/glassAlienBlood.webp",
+    "hero": "app/assets/webp/hero.webp",
+    "liquid": "app/assets/webp/liquid.webp",
+    "logo": "app/assets/webp/logo.webp"
+  },
+  "products": {
+    "1": "app/assets/webp/productos/1.webp",
+    "3": "app/assets/webp/productos/3.webp",
+    "4": "app/assets/webp/productos/4.webp",
+    "5": "app/assets/webp/productos/5.webp",
+    "6": "app/assets/webp/productos/6.webp",
+    "7": "app/assets/webp/productos/7.webp",
+    "8": "app/assets/webp/productos/8.webp",
+    "9": "app/assets/webp/productos/9.webp",
+    "A-MARTE@72x": "app/assets/webp/productos/A-MARTE@72x.webp",
+    "BESO-CUANTICO@72x": "app/assets/webp/productos/BESO-CUANTICO@72x.webp"
+  },
+  "gallery": {},
+  "awards": {
+    "1": "app/assets/webp/awards/1.webp",
+    "2": "app/assets/webp/awards/2.webp",
+    "3": "app/assets/webp/awards/3.webp",
+    "4": "app/assets/webp/awards/4.webp",
+    "5": "app/assets/webp/awards/5.webp",
+    "6": "app/assets/webp/awards/6.webp",
+    "7": "app/assets/webp/awards/7.webp",
+    "8": "app/assets/webp/awards/8.webp",
+    "9": "app/assets/webp/awards/9.webp",
+    "10": "app/assets/webp/awards/10.webp"
+  },
+  "mobilVersion": {
+    "1": "app/assets/webp/mobilVersion/1.webp",
+    "2": "app/assets/webp/mobilVersion/2.webp",
+    "3": "app/assets/webp/mobilVersion/3.webp",
+    "4": "app/assets/webp/mobilVersion/4.webp",
+    "5": "app/assets/webp/mobilVersion/5.webp",
+    "6": "app/assets/webp/mobilVersion/6.webp",
+    "7": "app/assets/webp/mobilVersion/7.webp",
+    "8": "app/assets/webp/mobilVersion/8.webp",
+    "9": "app/assets/webp/mobilVersion/9.webp",
+    "10": "app/assets/webp/mobilVersion/10.webp",
+    "11": "app/assets/webp/mobilVersion/11.webp",
+    "12": "app/assets/webp/mobilVersion/12.webp"
+  },
+  "fondos": {}
+}

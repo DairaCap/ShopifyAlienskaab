@@ -154,7 +154,21 @@ export function Layout({children}: {children?: React.ReactNode}) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body style={{
+        margin: 0,
+        padding: 0,
+        minHeight: '100vh',
+        backgroundColor: '#0a0a0b',
+        backgroundImage:
+          'radial-gradient(circle at top left, rgba(142, 180, 212, 0.12), transparent 28%), ' +
+          'radial-gradient(circle at 85% 15%, rgba(180, 159, 212, 0.16), transparent 24%)',
+        color: '#a8a8b0',
+        fontFamily: '"Fiona", "Cormorant Garamond", Georgia, serif',
+        fontSize: '1.125rem',
+        lineHeight: '1.65',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale'
+      }}>
         {children}
         <ScrollRestoration nonce={nonce} />
         <Scripts nonce={nonce} />

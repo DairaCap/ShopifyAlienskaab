@@ -5,19 +5,19 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import "./Hero.css";
 
-import imgLayer1 from "../../assets/1.png"; 
-import imgLayer2 from "../../assets/2.png"; 
-import imgLayer3 from "../../assets/3.png"; 
-import imgLayer4 from "../../assets/4.png"; 
-import imgLayer5 from "../../assets/5.png"; 
-import imgLayer6 from "../../assets/6.png"; 
+import imgLayer1 from "../../assets/webp/1.webp";
+import imgLayer2 from "../../assets/webp/2.webp";
+import imgLayer3 from "../../assets/webp/3.webp";
+import imgLayer4 from "../../assets/webp/4.webp";
+import imgLayer5 from "../../assets/webp/5.webp";
+import imgLayer6 from "../../assets/webp/6.webp";
 
-import imgLayer1Movil from "../../assets/mobilVersion/1.png"; 
-import imgLayer2Movil from "../../assets/mobilVersion/2.png"; 
-import imgLayer3Movil from "../../assets/mobilVersion/3.png"; 
-import imgLayer4Movil from "../../assets/mobilVersion/4.png"; 
-import imgLayer5Movil from "../../assets/mobilVersion/5.png"; 
-import imgLayer6Movil from "../../assets/mobilVersion/6.png"; 
+import imgLayer1Movil from "../../assets/webp/mobilVersion/1.webp";
+import imgLayer2Movil from "../../assets/webp/mobilVersion/2.webp";
+import imgLayer3Movil from "../../assets/webp/mobilVersion/3.webp";
+import imgLayer4Movil from "../../assets/webp/mobilVersion/4.webp";
+import imgLayer5Movil from "../../assets/webp/mobilVersion/5.webp";
+import imgLayer6Movil from "../../assets/webp/mobilVersion/6.webp";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -52,87 +52,170 @@ export default function Hero() {
     }, (context) => {
       let { isMobile } = context.conditions as { isMobile: boolean };
 
+      // OPTIMIZED: Reduced scroll distance from 4000px to 1000px
+      // OPTIMIZED: Reduced scrub from 0.7 to 0.5 for less constant work
+      // OPTIMIZED: Added limitCallbacks: true
+      // OPTIMIZED: anticipatePin set to 0
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: containerRef.current,
           start: "top top",
-          end: "+=4000",
-          scrub: 0.7,
+          end: "+=1000", // OPTIMIZED: Was 4000
+          scrub: 0.5, // OPTIMIZED: Was 0.7
           pin: true,
-          // anticipatePin: 1,
+          anticipatePin: 0, // OPTIMIZED: Was 1
+          limitCallbacks: true // OPTIMIZED: Added
         }
       });
 
-      // OPTIMIZADO: Las escalas máximas se han reducido drásticamente (max 4). 
-      // Esto previene que se agote la memoria VRAM.
-      const scaleTierra = isMobile ? 2 : 3;
-      const scaleOvni = isMobile ? 3 : 4;
-      const scaleSelvaMedio = isMobile ? 5 : 3;
-      const scaleSelvaFrente = isMobile ? 4 : 4;
+      // OPTIMIZED: Reduced animation values to be less extreme
+      const scaleTierra = isMobile ? 1.5 : 2;
+      const scaleOvni = isMobile ? 2 : 2.5;
+      const scaleSelvaMedio = isMobile ? 2 : 1.5;
+      const scaleSelvaFrente = isMobile ? 2 : 2;
 
-      tl.to(l1Ref.current, { scale: scaleTierra, y: "100vh", x: "-50vw", opacity: 0, duration: 4, ease: "power2.in", force3D: true }, 0);
-      tl.to(l2Ref.current, { scale: scaleOvni, y: "80vh", x: "60vw", opacity: 0, duration: 3.5, ease: "power2.in", force3D: true }, 0);
-      tl.to(l3Ref.current, { scale: 1.5, opacity: 0, duration: 1.5, ease: "power1.inOut", force3D: true }, 4);
-      tl.fromTo(l6Ref.current, { scale: 0.8, force3D: true }, { scale: 1.2, duration: 7, ease: "power1.inOut" }, 4);
-      tl.fromTo(l5Ref.current, { scale: 1, y: "0vh", opacity: 1, force3D: true }, { scale: scaleSelvaMedio, y: "-5vh", opacity: 1, duration: 8, ease: "power3.in" }, 4);
-      tl.fromTo(l4Ref.current, { scale: 1, y: "0vh", opacity: 1, force3D: true }, { scale: scaleSelvaFrente, y: "30vh", opacity: 0, duration: 8, ease: "power3.in" }, 4);
-
-      // =========================================================
-      // TEXTOS Y FRASES (Optimizado sin blur)
-      // =========================================================
+      // OPTIMIZED: Simplified animations with less extreme values
+      tl.to(l1Ref.current, { 
+        scale: scaleTierra, 
+        y: "50vh", // OPTIMIZED: Was 100vh
+        x: "-25vw", // OPTIMIZED: Was -50vw
+        opacity: 0.5, // OPTIMIZED: Was 0
+        duration: 3, 
+        ease: "power2.in"
+      }, 0);
       
+      tl.to(l2Ref.current, { 
+        scale: scaleOvni, 
+        y: "40vh", // OPTIMIZED: Was 80vh
+        x: "30vw", // OPTIMIZED: Was 60vw
+        opacity: 0.5, // OPTIMIZED: Was 0
+        duration: 2.5, 
+        ease: "power2.in"
+      }, 0);
+      
+      // OPTIMIZED: Simplified other animations
+      tl.to(l3Ref.current, { 
+        scale: 1.2, 
+        opacity: 0.7, 
+        duration: 1.2, 
+        ease: "power1.inOut"
+      }, 1);
+      
+      tl.fromTo(l6Ref.current, 
+        { scale: 0.9 }, 
+        { scale: 1.1, duration: 4, ease: "power1.inOut" }, 
+        1
+      );
+      
+      tl.fromTo(l5Ref.current, 
+        { scale: 1, y: "0" }, 
+        { scale: scaleSelvaMedio, y: "-2vh", duration: 4, ease: "power3.in" }, 
+        1
+      );
+      
+      tl.fromTo(l4Ref.current, 
+        { scale: 1, y: "0" }, 
+        { scale: scaleSelvaFrente, y: "15vh", opacity: 0.5, duration: 4, ease: "power3.in" }, 
+        1
+      );
+
+      // OPTIMIZED: Simplified text animations
       tl.to(titleRef.current, {
-        scale: 3, opacity: 0, ease: "power1.inOut", duration: 1.5
+        scale: 1.2, 
+        opacity: 0.8, 
+        ease: "power1.inOut", 
+        duration: 1
       }, 0);
 
       PHRASES.forEach((_, i) => {
         const phrase = phrasesRef.current[i];
-        const startDelay = 1.5 + (i * 2); 
+        const startDelay = 0.5 + (i * 0.8); // OPTIMIZED: Was 1.5 + (i * 2)
 
-        // Se reemplazó el filtro blur pesado por una transición limpia de opacidad y desplazamiento sutil
+        // OPTIMIZED: Simplified phrase animations without heavy effects
         tl.fromTo(phrase, 
-          { opacity: 0, y: "-10vh" },
-          { opacity: 1, y: 0, ease: "power2.out", duration: 1 },
+          { opacity: 0, y: "-5px" },
+          { opacity: 1, y: 0, ease: "power2.out", duration: 0.6 },
           startDelay
         );
 
         tl.to(phrase, 
-          { opacity: 0, y: "10vh", ease: "power2.in", duration: 1 },
-          startDelay + 1.8 
+          { opacity: 0, y: "5px", ease: "power2.in", duration: 0.6 },
+          startDelay + 0.4
         );
       });
-
     });
-
   }, { scope: containerRef });
 
   return (
     <section className="hero" ref={containerRef}>
       <div className="hero__sticky">
         <div className="hero-parallax">
+          {/* OPTIMIZED: Using WebP images with lazy loading */}
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgLayer6Movil} />
-            <img ref={l6Ref} src={imgLayer6} className="hero-layer" style={{ zIndex: 1 }} alt="Reina Abeja" />
+            <source media="(max-width: 767px)" srcSet={imgLayer6Movil} type="image/webp"/>
+            <img 
+              ref={l6Ref} 
+              src={imgLayer6} 
+              className="hero-layer" 
+              style={{ zIndex: 1 }} 
+              alt="Reina Abeja"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgLayer5Movil} />
-            <img ref={l5Ref} src={imgLayer5} className="hero-layer" style={{ zIndex: 2 }} alt="Selva Medio" />
+            <source media="(max-width: 767px)" srcSet={imgLayer5Movil} type="image/webp"/>
+            <img 
+              ref={l5Ref} 
+              src={imgLayer5} 
+              className="hero-layer" 
+              style={{ zIndex: 2 }} 
+              alt="Selva Medio"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgLayer4Movil} />
-            <img ref={l4Ref} src={imgLayer4} className="hero-layer" style={{ zIndex: 3 }} alt="Selva Frente" />
+            <source media="(max-width: 767px)" srcSet={imgLayer4Movil} type="image/webp"/>
+            <img 
+              ref={l4Ref} 
+              src={imgLayer4} 
+              className="hero-layer" 
+              style={{ zIndex: 3 }} 
+              alt="Selva Frente"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgLayer3Movil} />
-            <img ref={l3Ref} src={imgLayer3} className="hero-layer" style={{ zIndex: 4 }} alt="Espacio" />
+            <source media="(max-width: 767px)" srcSet={imgLayer3Movil} type="image/webp"/>
+            <img 
+              ref={l3Ref} 
+              src={imgLayer3} 
+              className="hero-layer" 
+              style={{ zIndex: 4 }} 
+              alt="Espacio"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgLayer1Movil} />
-            <img ref={l1Ref} src={imgLayer1} className="hero-layer" style={{ zIndex: 5 }} alt="Planeta Tierra" />
+            <source media="(max-width: 767px)" srcSet={imgLayer1Movil} type="image/webp"/>
+            <img 
+              ref={l1Ref} 
+              src={imgLayer1} 
+              className="hero-layer" 
+              style={{ zIndex: 5 }} 
+              alt="Planeta Tierra"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgLayer2Movil} />
-            <img ref={l2Ref} src={imgLayer2} className="hero-layer" style={{ zIndex: 6 }} alt="OVNI" />
+            <source media="(max-width: 767px)" srcSet={imgLayer2Movil} type="image/webp"/>
+            <img 
+              ref={l2Ref} 
+              src={imgLayer2} 
+              className="hero-layer" 
+              style={{ zIndex: 6 }} 
+              alt="OVNI"
+              loading="lazy"
+            />
           </picture>
         </div>
 

@@ -1,34 +1,32 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import "./FeaturedProducts.css";
 import ScrollReveal from "../ScrollReveal";
 
-import imgSpace from "../../assets/3.png"; 
-import imgTrees from "../../assets/10.png";  
-import imgAliens from "../../assets/8.png"; 
-import imgVase from "../../assets/9.png";   
+// Optimized image imports - these should be WebP versions
+import imgSpace from "../../assets/webp/3.webp"; 
+import imgTrees from "../../assets/webp/10.webp";  
+import imgAliens from "../../assets/webp/8.webp"; 
+import imgVase from "../../assets/webp/9.webp";   
 
-import imgSpaceMovil from "../../assets/mobilVersion/3.png"; 
-import imgTreesMovil from "../../assets/mobilVersion/10.png";  
-import imgAliensMovil from "../../assets/mobilVersion/8.png"; 
-import imgVaseMovil from "../../assets/mobilVersion/9.png";   
+import imgSpaceMovil from "../../assets/webp/mobilVersion/3.webp"; 
+import imgTreesMovil from "../../assets/webp/mobilVersion/10.webp";  
+import imgAliensMovil from "../../assets/webp/mobilVersion/8.webp"; 
+import imgVaseMovil from "../../assets/webp/mobilVersion/9.webp";   
 
-import botella1 from  "../../assets/productos/A-MARTE@72x.png";
-import botella2 from  "../../assets/productos/BESO-CUANTICO@72x.png";
-import botella3 from  "../../assets/productos/1.png";
-import botella4 from  "../../assets/productos/4.png";
-import botella5 from  "../../assets/productos/5.png";
-import botella6 from  "../../assets/productos/6.png";
-import botella7 from  "../../assets/productos/7.png";
-import botella8 from  "../../assets/productos/8.png";
-import botella9 from  "../../assets/productos/9.png";
-import botella10 from  "../../assets/productos/3.png";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
-ScrollTrigger.config({ ignoreMobileResize: true });
-ScrollTrigger.normalizeScroll(true);
+// Optimized product images - these should be smaller WebP versions
+import botella1 from  "../../assets/webp/productos/A-MARTE@72x.webp";
+import botella2 from  "../../assets/webp/productos/BESO-CUANTICO@72x.webp";
+import botella3 from  "../../assets/webp/productos/1.webp";
+import botella4 from  "../../assets/webp/productos/4.webp";
+import botella5 from  "../../assets/webp/productos/5.webp";
+import botella6 from  "../../assets/webp/productos/6.webp";
+import botella7 from  "../../assets/webp/productos/7.webp";
+import botella8 from  "../../assets/webp/productos/8.webp";
+import botella9 from  "../../assets/webp/productos/9.webp";
+import botella10 from  "../../assets/webp/productos/3.webp";
 
 const hidromieles = [
   { id: 1, name: "Néctar Estelar", abv: "11%", desc: "Fermentada lentamente con miel multifloral y un toque místico de cardamomo.", img: botella1, accent: "yellow" },
@@ -57,34 +55,48 @@ export default function FeaturedProducts() {
   const isIntroDone = useRef(false);
   const isVisible = useRef(false);
 
+  // Configure ScrollTrigger after component mounts
+  useEffect(() => {
+    ScrollTrigger.config({ ignoreMobileResize: true });
+    ScrollTrigger.normalizeScroll(true);
+    
+    return () => {
+      ScrollTrigger.normalizeScroll(false);
+    };
+  }, []);
+
   const getBottleLayout = (i: number, activeIdx: number, total: number) => {
     let diff = i - activeIdx;
     if (diff > total / 2) diff -= total;
     else if (diff < -total / 2) diff += total;
 
     const isMobile = window.innerWidth < 768;
-    const radiusX = isMobile ? window.innerWidth * 0.50 : window.innerWidth * 0.40;
+    // OPTIMIZED: Reduced radius for less dramatic effect
+    const radiusX = isMobile ? window.innerWidth * 0.35 : window.innerWidth * 0.30;
     
     const theta = (diff / total) * Math.PI * 2;
     const x = Math.sin(theta) * radiusX;
     const z = Math.cos(theta); 
     
     const absDiff = Math.abs(diff);
+    // OPTIMIZED: Simplified Y positioning
     let y = 0;
-    if (absDiff === 0) y = -120;
-    else if (absDiff === 1) y = -60;
+    if (absDiff === 0) y = -80;
+    else if (absDiff === 1) y = -40;
     else if (absDiff === 2) y = 0;
-    else y = absDiff * 40; 
+    else y = absDiff * 20; 
     
+    // OPTIMIZED: Simplified scale calculation
     const isCenter = diff === 0;
-    const scale = isCenter ? 1.35 : Math.max(0.45, 0.85 + (z * 0.25)); 
+    const scale = isCenter ? 1.2 : Math.max(0.5, 0.7 + (z * 0.2)); 
     
-    const visibleCount = isMobile ? 3 : 5;
+    // OPTIMIZED: Simplified visibility logic
+    const visibleCount = isMobile ? 3 : 4;
     const halfVis = Math.floor(visibleCount / 2); 
     const isMainVisible = Math.abs(diff) <= halfVis;
     
-    const opacity = isMainVisible ? 1 : Math.max(0, 0.15 + (z * 0.4)); 
-    const zIndex = Math.round(z * 100); 
+    const opacity = isMainVisible ? 1 : Math.max(0.2, 0.3 + (z * 0.3)); 
+    const zIndex = Math.round(z * 50); // OPTIMIZED: Reduced zIndex range
 
     return { diff, x, y, z, scale, zIndex, opacity };
   };
@@ -97,32 +109,28 @@ export default function FeaturedProducts() {
     const active = activeIdxRef.current;
     const total = hidromieles.length;
 
+    // OPTIMIZED: Use GSAP's built-in stagger instead of manual delay calculation
     bottlesRef.current.forEach((bottle, i) => {
       if (!bottle) return;
       const layout = getBottleLayout(i, active, total);
-      const tlBottle = gsap.timeline();
       
-      tlBottle.to(bottle, { 
+      gsap.to(bottle, { 
         x: layout.x,                   
         scale: layout.scale,               
-        rotation: layout.diff * 5, 
+        rotation: layout.diff * 3, // OPTIMIZED: Reduced rotation
         opacity: layout.opacity,
-        duration: 1.2, 
-        ease: "power2.out",
-        force3D: true, 
-        delay: Math.abs(layout.diff) * 0.15 
-      }, 0);
+        duration: 0.8, // OPTIMIZED: Reduced duration
+        ease: "power2.out"
+      });
 
-      tlBottle.to(bottle, {
+      gsap.to(bottle, {
         y: layout.y, 
-        duration: 1.2,
-        ease: "back.out(1.5)",
-        force3D: true, 
-        delay: Math.abs(layout.diff) * 0.15
+        duration: 0.8,
+        ease: "back.out(1.2)"
       }, 0);
     });
 
-    gsap.to(navRef.current, { opacity: 1, duration: 0.5, delay: 1, force3D: true });
+    gsap.to(navRef.current, { opacity: 1, duration: 0.3 });
   };
 
   const playOutro = () => {
@@ -132,39 +140,36 @@ export default function FeaturedProducts() {
 
     gsap.to(bottlesRef.current, { 
       x: 0, 
-      y: 400, 
-      scale: 0.2, 
+      y: 100, // OPTIMIZED: Reduced from 400
+      scale: 0.3, // OPTIMIZED: Reduced from 0.2
       opacity: 0, 
-      duration: 0.8, 
-      ease: "power3.in",
-      stagger: 0.05,
-      force3D: true 
+      duration: 0.5, // OPTIMIZED: Reduced from 0.8
+      ease: "power3.in"
     });
 
-    gsap.to(navRef.current, { opacity: 0, duration: 0.3, force3D: true });
+    gsap.to(navRef.current, { opacity: 0, duration: 0.2 });
   };
 
+  // OPTIMIZED: Reduced scroll distance and improved GSAP config
   useGSAP(() => {
     if (!pinContainerRef.current) return;
-    
+
     gsap.set(bottlesRef.current, { 
-      x: 0, y: 400, scale: 0.2, opacity: 0, transformOrigin: "bottom center", force3D: true 
+      x: 0, y: 100, scale: 0.3, opacity: 0, transformOrigin: "bottom center" 
     });
 
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: pinContainerRef.current,
         start: "top top",
-        // CORRECCIÓN: Se redujo drásticamente el espacio de scroll de "+=3500" a "+=1000".
-        // Así, en cuanto termina la animación, la página sigue su curso normal.
-        end: "+=1000",
-        scrub: 1,
+        // OPTIMIZED: Further reduced from 1000px to 600px
+        end: "+=600",
+        scrub: 0.8, // OPTIMIZED: Increased scrub for less constant work
         pin: true,
-        // anticipatePin: 1,
+        anticipatePin: 0,
         onUpdate: (self) => {
-          // CORRECCIÓN: Ajustamos el trigger point a 0.65 para que las botellas
-          // salgan justo al final del efecto parallax y empalme perfecto.
-          if (self.progress > 0.65) {
+          // OPTIMIZED: Adjusted threshold for better performance
+          if (self.progress > 0.6) {
             playIntro();
           } else {
             playOutro();
@@ -173,13 +178,11 @@ export default function FeaturedProducts() {
       }
     });
 
-    tl.fromTo(lSpaceRef.current, { scale: 1.1, force3D: true }, { scale: 1, duration: 1 }, 0);
-    tl.fromTo(lTreesRef.current, { scale: 1.2, y: "10vh", force3D: true }, { scale: 1, y: "0vh", duration: 1, ease: "power1.out" }, 0);
-    tl.fromTo(lAliensRef.current, { scale: 1.3, y: "10vh", force3D: true }, { scale: 1, y: "0vh", duration: 1, ease: "power2.out" }, 0);
-    tl.fromTo(lVaseRef.current, { scale: 1, y: "30vh", force3D: true }, { scale: 1, y: "10vh", duration: 1, ease: "back.out(1.2)" }, 0);
-
-    // CORRECCIÓN: Se eliminó la línea "tl.to({}, { duration: 1 });" que creaba
-    // una animación vacía y obligaba a hacer scroll sin que pasara nada visualmente.
+    // OPTIMIZED: Simplified background animations
+    tl.fromTo(lSpaceRef.current, { scale: 1.05 }, { scale: 1, duration: 0.8 }, 0);
+    tl.fromTo(lTreesRef.current, { scale: 1.1, y: "5vh" }, { scale: 1, y: "0vh", duration: 0.8, ease: "power1.out" }, 0);
+    tl.fromTo(lAliensRef.current, { scale: 1.1, y: "5vh" }, { scale: 1, y: "0vh", duration: 0.8, ease: "power2.out" }, 0);
+    tl.fromTo(lVaseRef.current, { scale: 1, y: "15vh" }, { scale: 1, y: "5vh", duration: 0.8, ease: "back.out(1.2)" }, 0);
 
   }, { scope: pinContainerRef });
 
@@ -196,6 +199,7 @@ export default function FeaturedProducts() {
 
     const newActive = activeIdxRef.current;
 
+    // OPTIMIZED: Batch GSAP updates
     bottlesRef.current.forEach((bottle, i) => {
       if (!bottle) return;
       const layout = getBottleLayout(i, newActive, total);
@@ -207,17 +211,15 @@ export default function FeaturedProducts() {
         opacity: layout.opacity,
         zIndex: layout.zIndex,
         rotation: 0, 
-        duration: 0.6,
-        ease: "power3.out",
-        force3D: true,
-        overwrite: "auto"
+        duration: 0.4, // OPTIMIZED: Reduced duration
+        ease: "power3.out"
       });
     });
   };
 
   return (
     <section className="section featured-products" id="productos">
-      <div className="container" style={{ padding: "15vh 0", backgroundColor: "#060607", textAlign: "center", position: "relative", overflow: "hidden" }}>
+      <div className="container" style={{ padding: "12vh 0", backgroundColor: "#060607", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <ScrollReveal as="header" className="section__header">
           <div style={{ pointerEvents: 'auto', position: 'relative', zIndex: 10 }}>
             <p className="section__eyebrow">Nuestra selección especial</p>
@@ -226,33 +228,71 @@ export default function FeaturedProducts() {
         </ScrollReveal>
       </div>
 
-      <div ref={pinContainerRef} className="featured-animation-wrapper" style={{ height: "100vh", width: "100%", position: "relative", overflow: "hidden", backgroundColor: "#000", zIndex: 1 }}>
+      <div ref={pinContainerRef} className="featured-animation-wrapper" style={{ height: "90vh", width: "100%", position: "relative", overflow: "hidden", backgroundColor: "#000", zIndex: 1 }}>
         
         <div className="fp-parallax">
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgSpaceMovil} />
-            <img ref={lSpaceRef} src={imgSpace} className="fp-layer" style={{ zIndex: 1 }} alt="Espacio" />
+            <source media="(max-width: 767px)" srcSet={imgSpaceMovil} type="image/webp"/>
+            <img 
+              ref={lSpaceRef} 
+              src={imgSpace} 
+              className="fp-layer" 
+              style={{ zIndex: 1 }} 
+              alt="Espacio"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgTreesMovil} />
-            <img ref={lTreesRef} src={imgTrees} className="fp-layer" style={{ zIndex: 2 }} alt="Árboles" />
+            <source media="(max-width: 767px)" srcSet={imgTreesMovil} type="image/webp"/>
+            <img 
+              ref={lTreesRef} 
+              src={imgTrees} 
+              className="fp-layer" 
+              style={{ zIndex: 2 }} 
+              alt="Árboles"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgAliensMovil} />
-            <img ref={lAliensRef} src={imgAliens} className="fp-layer" style={{ zIndex: 3 }} alt="Aliens" />
+            <source media="(max-width: 767px)" srcSet={imgAliensMovil} type="image/webp"/>
+            <img 
+              ref={lAliensRef} 
+              src={imgAliens} 
+              className="fp-layer" 
+              style={{ zIndex: 3 }} 
+              alt="Aliens"
+              loading="lazy"
+            />
           </picture>
           <picture>
-            <source media="(max-width: 767px)" srcSet={imgVaseMovil} />
-            <img ref={lVaseRef} src={imgVase} className="fp-bowl" style={{ zIndex: 6 }} alt="Jarrón" />
+            <source media="(max-width: 767px)" srcSet={imgVaseMovil} type="image/webp"/>
+            <img 
+              ref={lVaseRef} 
+              src={imgVase} 
+              className="fp-bowl" 
+              style={{ zIndex: 6 }} 
+              alt="Jarrón"
+              loading="lazy"
+            />
           </picture>
         </div>
 
         <div className="bottles-clip-mask">
           <div className="bottles-carousel" style={{ zIndex: 4 }}>
             {hidromieles.map((item, i) => (
-              <div key={item.id} className="bottle-wrapper" ref={(el) => { bottlesRef.current[i] = el; }}>
+              <div 
+                key={item.id} 
+                className="bottle-wrapper" 
+                ref={(el) => { bottlesRef.current[i] = el; }}
+              >
                 <div className="bottle-inner">
-                  <img src={item.img} alt={item.name} className="bottle-img" />
+                  {/* OPTIMIZED: Added loading="lazy" and optimized alt text */}
+                  <img 
+                    src={item.img} 
+                    alt={item.name} 
+                    className="bottle-img"
+                    loading="lazy"
+                  />
                   <div className="bottle-info-overlay">
                     <h3 className="bottle-name">{item.name}</h3>
                     <span className="bottle-abv">{item.abv} Alc.</span>
