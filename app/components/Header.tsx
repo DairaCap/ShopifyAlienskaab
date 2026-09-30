@@ -25,7 +25,7 @@ export function Header({
   publicStoreDomain,
 }: HeaderProps) {
   const { shop, menu } = header;
-  const { open } = useAside();
+  const { open, close } = useAside();
 
   // Estado para controlar el despliegue del menú en móviles (similar a AlienskaabFront)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
