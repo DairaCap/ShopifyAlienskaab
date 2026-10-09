@@ -1,6 +1,6 @@
 /*
 * --------------------------------------------------
-* components/Header - Redesigned to match AlienskaabFront style
+* components/Header - Responsive & Cosmic Dark Theme
 * --------------------------------------------------
 */
 :root {
@@ -51,6 +51,9 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* -------------------------------------------
+   DESKTOP HEADER (Se mantiene exactamente como está)
+------------------------------------------- */
 .site-header {
   position: fixed;
   top: 0;
@@ -68,7 +71,6 @@
   width: min(100% - 2rem, var(--max-width));
   height: 50px;
   margin-inline: auto;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -77,7 +79,24 @@
   padding: 0.5rem 1rem;
   backdrop-filter: blur(16px);
   border-radius: var(--radius-pill);
+}
 
+.header-logo {
+  width: 200px !important;
+  height: auto !important;
+}
+
+/* Oculto en escritorio */
+.site-header__mobile-menu {
+  display: none;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
 }
 
 .site-header__logo {
@@ -89,11 +108,13 @@
   font-weight: 700;
   text-transform: uppercase;
   color: var(--color-text-heading);
+  text-decoration: none;
+  flex-shrink: 0;
 }
 
 .site-header__logo-img {
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 121px;
+  height: auto;
   object-fit: contain;
   display: block;
 }
@@ -112,6 +133,7 @@
   padding: 0.55rem 0.8rem;
   border-radius: 999px;
   color: var(--color-text-muted);
+  text-decoration: none;
   transition: background-color 180ms ease, color 180ms ease;
 }
 
@@ -119,22 +141,22 @@
 .site-header__link--active {
   background: rgba(245, 240, 232, 0.12);
   color: var(--color-shell);
-
 }
 
-/* Botón de CTA (como el de "Contacto" en AlienskaabFront) */
+/* Botón de CTA / Account para escritorio */
 .btn--shell {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
   height: 2.75rem;
   padding: 0.5rem 1.125rem;
   font-family: var(--font-heading);
-  font-size: 0.875rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.125em;
   text-transform: uppercase;
   color: var(--color-text-heading);
   background-color: transparent;
-  border: 2px solid var(--color-border);
   border-radius: var(--radius-pill);
   cursor: pointer;
   user-select: none;
@@ -152,154 +174,297 @@
   color: var(--color-shell);
 }
 
-/* -------------------------------------------
-   ESTILOS DEL BOTÓN (OCULTO EN ESCRITORIO)
-------------------------------------------- */
-.mobile-menu-btn {
-  display: none;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-/* Las líneas de la hamburguesa */
-.hamburger-line {
-  width: 1.8rem;
-  height: 2px;
-  background-color: var(--color-text-muted);
-  border-radius: 2px;
-  margin: 3px 0;
-  transition: all 0.2s ease;
-}
-
-/* -------------------------------------------
-   AJUSTES PARA DISPOSITIVOS MÓVILES
-------------------------------------------- */
-@media (max-width: 768px) {
-
-  /* Contenedor principal en móviles */
-  .site-header__inner {
-    position: relative;
-    justify-content: center;
-    /* Mantiene el logo al centro cuando está cerrado */
-    transition: all 0.3s ease;
-  }
-
-  /* Diseño del botón hamburguesa */
-  .mobile-menu-btn {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 1.8rem;
-    height: 1.2rem;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    position: absolute;
-    left: 1rem;
-    /* Centrado vertical perfecto cuando está cerrado */
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 100;
-  }
-
-  /*
-    ESTADO CERRADO:
-    Ocultamos las opciones de navegación y el botón de contacto.
-    El logo permanecerá visible al centro.
-  */
-  .site-header__inner:not(.is-open) .site-header__nav,
-  .site-header__inner:not(.is-open) .btn--shell {
-    display: none;
-  }
-
-  /*
-    ESTADO ABIERTO:
-    Apilamos todo en columna (Logo -> Opciones -> Contacto).
-  */
-  .site-header__inner.is-open {
-    flex-direction: column;
-    align-items: stretch;
-    padding-top: 2.5rem;
-    /* Genera espacio para que el botón no tape el logo */
-    padding-bottom: 2rem;
-    gap: 1.5rem;
-    border-radius: 20px;
-    background: rgba(17, 17, 17, 0.95);
-  }
-
-  /* Fija el botón arriba a la izquierda cuando el menú crece */
-  .site-header__inner.is-open .mobile-menu-btn {
-    top: 1.5rem;
-    transform: none;
-  }
-
-  .site-header__inner.is-open .site-header__nav,
-  .site-header__inner.is-open .btn--shell {
-    display: block;
-    width: 100%;
-  }
-
-  /* Estilos para los enlaces en el menú móvil */
-  .site-header__inner.is-open .site-header__nav {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    margin-top: 1rem;
-  }
-
-  .site-header__inner.is-open .site-header__link {
-    width: 100%;
-    text-align: left;
-    padding: 0.75rem 1rem;
-  }
-
-  /* Estilo para el botón CTA en móvil */
-  .site-header__inner.is-open .btn--shell {
-    width: 100%;
-    text-align: center;
-    padding: 0.875rem;
-    margin-top: 1rem;
-  }
-}
-
-/* Mantener algunos estilos originales del Header para compatibilidad */
-.header-menu-mobile-toggle {
-  @media (min-width: 48em) {
-    display: none;
-  }
-}
-
-.header-menu-mobile {
+.desktop-account-btn {
   display: flex;
-  flex-direction: column;
-  grid-gap: 1rem;
-}
-
-.header-menu-desktop {
-  display: none;
-  grid-gap: 1rem;
-
-  @media (min-width: 45em) {
-    display: flex;
-    grid-gap: 1rem;
-    margin-left: 3rem;
-  }
-}
-
-.header-menu-item {
-  cursor: pointer;
+  align-items: center;
 }
 
 .header-ctas {
   align-items: center;
   display: flex;
-  grid-gap: 1rem;
-  margin-left: auto;
+  gap: 0.5rem;
 }
 
-.header-ctas>* {
-  min-width: fit-content;
+.site-header__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--color-text-heading);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  border-radius: var(--radius-pill);
+  transition: color 150ms ease, opacity 150ms ease;
+}
+
+.site-header__icon-btn:hover {
+  color: var(--color-shell);
+  opacity: 0.85;
+}
+
+.header-icon {
+  display: block;
+  stroke-width: 2;
+  flex-shrink: 0;
+}
+
+.cart-badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: rgba(245, 240, 232, 0.15);
+  color: var(--color-text-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-left: 0.2rem;
+}
+
+/* -------------------------------------------
+   AJUSTES PARA DISPOSITIVOS MÓVILES (<= 768px)
+------------------------------------------- */
+@media (max-width: 768px) {
+
+  /* Header pegado arriba con sticky y fondo negro del layout */
+  .site-header {
+    position: sticky;
+    top: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    width: 100%;
+    z-index: 9999;
+    padding: 0;
+    background-color: #0a0a0b;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    display: block;
+  }
+
+  /* Contenedor del header en móvil: 3 columnas (Izquierda: Menu, Centro: Logo, Derecha: Iconos) */
+  .site-header__inner {
+    width: 100%;
+    max-width: 100%;
+    height: 56px;
+    margin: 0;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    border-radius: 0;
+    backdrop-filter: none;
+    background: #0a0a0b;
+    box-sizing: border-box;
+  }
+
+  /* 1. Izquierda: Botón de 3 barritas de menú */
+  .site-header__mobile-menu {
+    display: flex;
+    align-items: center;
+    justify-self: start;
+  }
+
+  .mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4.5px;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background-color 150ms ease;
+  }
+
+  .mobile-menu-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .hamburger-line {
+    width: 20px;
+    height: 2px;
+    background-color: var(--color-text-heading, #f5f0e8);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    transform-origin: center;
+  }
+
+  /* Morph hamburger lines to X when menu is active */
+  .mobile-menu-btn.is-active .hamburger-line:nth-child(1) {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+
+  .mobile-menu-btn.is-active .hamburger-line:nth-child(2) {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+
+  .mobile-menu-btn.is-active .hamburger-line:nth-child(3) {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  /* 2. Centro: Logo */
+  .site-header__logo {
+    justify-self: center;
+    text-align: center;
+    font-size: 1.1rem;
+    letter-spacing: 0.18em;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  /* Ocultar navegación tradicional en el header en móvil */
+  .site-header__nav {
+    display: none;
+  }
+
+  /* Ocultar botón de cuenta del header en móvil (va en el menú desplegable) */
+  .desktop-account-btn {
+    display: none;
+  }
+
+  /* 3. Derecha: Iconos de búsqueda y carrito */
+  .header-ctas {
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: 0;
+  }
+
+  .site-header__icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+
+    border-radius: 8px;
+    color: var(--color-text-heading, #f5f0e8);
+    position: relative;
+  }
+
+  .site-header__icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+  }
+
+  /* En móvil solo mostramos los iconos, ocultamos las etiquetas de texto */
+  .search-text,
+  .cart-text {
+    display: none;
+  }
+
+  .cart-badge-count {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: var(--color-accent, #e8a04a);
+    color: #0a0a0b;
+    font-size: 0.65rem;
+    font-weight: 800;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* -------------------------------------------
+   ESTILOS PARA EL MENÚ MÓVIL DESPLEGABLE (ASIDE)
+------------------------------------------- */
+.header-menu-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+/* Información de Cuenta en la parte superior del menú móvil */
+.mobile-menu-account {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-border, #2a2a30);
+}
+
+.mobile-menu-account__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  width: 100%;
+  padding: 0.75rem 1.25rem;
+  font-family: var(--font-heading);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.125em;
+  text-transform: uppercase;
+  color: var(--color-text-heading);
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1.5px solid var(--color-border, #2a2a30);
+  border-radius: var(--radius-pill);
+  text-decoration: none;
+  transition: all 180ms ease;
+  box-sizing: border-box;
+}
+
+.mobile-menu-account__btn:hover {
+  background-color: var(--color-border, #2a2a30);
+  color: var(--color-shell);
+  border-color: var(--color-accent, #e8a04a);
+}
+
+.mobile-menu-account__icon {
+  flex-shrink: 0;
+}
+
+.mobile-menu-account__fallback {
+  text-align: center;
+  padding: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* Enlaces del menú dentro del drawer */
+.header-menu-mobile .header-menu-item {
+  display: block;
+  padding: 0.85rem 1rem;
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text, #a8a8b0);
+  text-decoration: none;
+  border-radius: var(--radius-sm, 8px);
+  transition: all 150ms ease;
+}
+
+.header-menu-mobile .header-menu-item:hover,
+.header-menu-mobile .header-menu-item--active {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--color-shell, #f5f0e8);
+  padding-left: 1.25rem;
+}
+
+.header-menu-desktop {
+  display: none;
+
+  @media (min-width: 48em) {
+    display: flex;
+    gap: 1rem;
+  }
 }
