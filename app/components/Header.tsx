@@ -61,7 +61,7 @@ export function Header({
           aria-label={`${shop.name} home`}
           prefetch="intent"
         >
-          <img src="../app/assets/alienskaab-blanco.png" alt="Alienskaab" className="site-header__logo-img" />
+          <img src="../app/assets/aliensKaab-blanco.png" alt="Alienskaab" className="site-header__logo-img" />
         </NavLink>
 
         {/* 3. Main Navigation (Center on desktop, hidden on mobile) */}
