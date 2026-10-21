@@ -8,6 +8,7 @@ import {
 import type { HeaderQuery, CartApiQueryFragment } from 'storefrontapi.generated';
 import { useAside } from '~/components/Aside';
 import './Header.css';
+import logoImg from '~/assets/aliensKaab-blanco.png';
 
 interface HeaderProps {
   header: HeaderQuery;
@@ -61,7 +62,7 @@ export function Header({
           aria-label={`${shop.name} home`}
           prefetch="intent"
         >
-          <img src="../app/assets/aliensKaab-blanco.png" alt="Alienskaab" className="site-header__logo-img" />
+          <img src={logoImg} alt="Alienskaab" className="site-header__logo-img" />
         </NavLink>
 
         {/* 3. Main Navigation (Center on desktop, hidden on mobile) */}
