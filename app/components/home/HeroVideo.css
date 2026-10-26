@@ -1,8 +1,7 @@
 .hero-video-container {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 100vh;
+
   background-color: #000;
   overflow: hidden;
   display: flex;
@@ -19,44 +18,67 @@
 
 .hero-video-overlay {
   position: absolute;
-  top: 50%;
+  /* Posicionamos un poco más arriba para replicar la imagen original */
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 90%;
-  max-width: 1200px;
+  max-width: 900px;
   color: var(--color-text, #fff);
-  font-size: clamp(1.1rem, 3.5vw, 3rem);
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  /* Separación entre el título y el bloque de texto */
+}
+
+/* Quitamos las clases .fade-in-step porque ya no las necesitamos */
+
+.hero-title,
+.hero-body-text p {
+  opacity: 0;
+  margin: 0;
+  /* Desglosamos la animación para que no sobreescriba el animation-delay de React */
+  animation-name: fadeInText;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: forwards;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 4vw, 4rem);
   font-weight: 700;
+  font-family: Arial, Helvetica, sans-serif;
   text-align: center;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+  color: #e3e2dc;
   letter-spacing: 0.05em;
-  line-height: 1.25;
-  z-index: 10;
-  opacity: 0;
-  pointer-events: none;
-  animation: fadeInText 1s ease-in-out forwards;
+  line-height: 1.3;
+}
+
+.hero-body-text {
+  font-size: clamp(1.5rem, 2.5vw, 1.4rem);
+  font-weight: 400;
+  font-family: Arial, Helvetica, sans-serif;
+  text-align: left;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding-left: 5%;
+  color: #e3e2dc;
 }
 
 @keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
   to {
     opacity: 1;
-  }
-}
-
-/* Responsive adjustments */
-@media (min-width: 1024px) {
-  .hero-video-overlay {
-    left: 45%; /* Aesthetic subtle offset on large screens */
-  }
-}
-
-@media (max-width: 768px) {
-  .hero-video-container {
-    aspect-ratio: 16 / 9;
-  }
-
-  .hero-video-overlay {
-    font-size: clamp(0.95rem, 4vw, 1.6rem);
-    padding: 0 0.5rem;
+    transform: translateY(0);
   }
 }

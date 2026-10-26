@@ -1,19 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import alienDrinkingVideo from '~/assets/AlienDrinking.mp4';
+import alienDrinkingVideo from '~/assets/AlienResting.webm';
 import './HeroVideo.css';
 
 export default function HeroVideo() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [showText, setShowText] = useState(false);
+  const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
 
-    // Show text at second 3
+    // Mostramos el contenedor al segundo 1, los retrasos de CSS (delays) harán el resto
     const timer = setTimeout(() => {
-      setShowText(true);
-    }, 3000);
+      setShowContent(true);
+    }, 1000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -48,13 +48,37 @@ export default function HeroVideo() {
         onEnded={handleVideoEnded}
         className="hero-video"
       >
-        <source src={alienDrinkingVideo} type="video/mp4" />
+        <source src={alienDrinkingVideo} type="video/webm" />
         Tu navegador no soporta el video.
       </video>
 
-      {showText && (
+      {showContent && (
         <div className="hero-video-overlay">
-          DÉJATE ABDUCIR POR NUEVAS EXPERIENCIAS
+          {/* Título: Aparece de inmediato (0s) */}
+          <h1 className="hero-title" style={{ animationDelay: '0s' }}>
+            DEJATE ABDUCIR POR<br />
+            NUEVAS EXPERIENCIAS
+          </h1>
+
+          {/* Contenedor de los 3 textos inferiores */}
+          <div className="hero-body-text">
+            {/* Exhibición 1: Aparece al segundo 1.5 */}
+            <p style={{ animationDelay: '1.5s' }}>
+              En Alienskaab buscamos<br />
+              inspirar momentos de<br />
+              conexión real.
+            </p>
+            {/* Exhibición 2: Aparece al segundo 3 */}
+            <p style={{ animationDelay: '3.0s' }}>
+              Volvamos a lo esencial.
+            </p>
+            {/* Exhibición 3: Aparece al segundo 4.5 */}
+            <p style={{ animationDelay: '4.5s' }}>
+              Disfrutemos de la<br />
+              naturaleza en su forma<br />
+              más honesta y pura.
+            </p>
+          </div>
         </div>
       )}
     </div>
