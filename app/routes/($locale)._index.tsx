@@ -8,47 +8,82 @@ import type {
 } from 'storefrontapi.generated';
 import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
+import CollectionsShowcase from '~/components/home/CollectionsShowcase';
+import type {ShowcaseCollection} from '~/components/home/CollectionsShowcase';
 
 export const meta: Route.MetaFunction = () => {
-  return [{title: 'Hydrogen | Home'}];
+  return [{title: 'Alienskaab | Hidromieles Artesanales'}];
 };
 
 export async function loader(args: Route.LoaderArgs) {
-  // Start fetching non-critical data without blocking time to first byte
   const deferredData = loadDeferredData(args);
-
-  // Await the critical data required to render initial state of the page
   const criticalData = await loadCriticalData(args);
-
   return {...deferredData, ...criticalData};
 }
 
-/**
- * Load data necessary for rendering content above the fold. This is the critical data
- * needed to render the page. If it's unavailable, the whole page should 400 or 500 error.
- */
 async function loadCriticalData({context}: Route.LoaderArgs) {
+  const {storefront} = context;
+
   const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
-    // Add other queries here, so that they are loaded in parallel
+    storefront.query(FEATURED_COLLECTION_QUERY),
   ]);
+
+  // Obtener colecciones del menú "Mieles"
+  let mielesCollections: ShowcaseCollection[] = [];
+  try {
+    const menuData = await storefront.query(MIELES_MENU_QUERY, {
+      variables: {menuHandle: 'mieles'},
+    });
+
+    const menuItems = menuData?.menu?.items ?? [];
+    const collectionIds = menuItems
+      .map((item: {resourceId?: string | null}) => item.resourceId)
+      .filter(Boolean) as string[];
+
+    if (collectionIds.length > 0) {
+      const collectionsData = await storefront.query(COLLECTIONS_BY_IDS_QUERY, {
+        variables: {ids: collectionIds},
+      });
+
+      mielesCollections = (collectionsData?.nodes ?? [])
+        .filter(
+          (node: {__typename?: string} | null) =>
+            node && node.__typename === 'Collection',
+        )
+        .map(
+          (col: {
+            id: string;
+            title: string;
+            handle: string;
+            image?: {
+              url: string;
+              altText?: string | null;
+              width?: number | null;
+              height?: number | null;
+            } | null;
+          }) => ({
+            id: col.id,
+            title: col.title,
+            handle: col.handle,
+            image: col.image ?? null,
+          }),
+        );
+    }
+  } catch (error) {
+    console.error('Error fetching mieles menu/collections:', error);
+  }
 
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
     featuredCollection: collections.nodes[0],
+    mielesCollections,
   };
 }
 
-/**
- * Load data for rendering content below the fold. This data is deferred and will be
- * fetched after the initial page load. If it's unavailable, the page should still 200.
- * Make sure to not throw any errors here, as it will cause the page to 500.
- */
 function loadDeferredData({context}: Route.LoaderArgs) {
   const recommendedProducts = context.storefront
     .query(RECOMMENDED_PRODUCTS_QUERY)
     .catch((error: Error) => {
-      // Log query errors, but don't throw them so the page can still render
       console.error(error);
       return null;
     });
@@ -60,10 +95,22 @@ function loadDeferredData({context}: Route.LoaderArgs) {
 
 export default function Homepage() {
   const data = useLoaderData<typeof loader>();
+
+  const handleCollectionsExit = () => {
+    const productsSection = document.getElementById('recommended-products-section');
+    productsSection?.scrollIntoView({behavior: 'smooth', block: 'start'});
+  };
+
   return (
     <div className="home">
       {data.isShopLinked ? null : <MockShopNotice />}
       <FeaturedCollection collection={data.featuredCollection} />
+      {data.mielesCollections.length > 0 && (
+        <CollectionsShowcase
+          collections={data.mielesCollections}
+          onExitBottom={handleCollectionsExit}
+        />
+      )}
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
@@ -102,6 +149,7 @@ function RecommendedProducts({
 }) {
   return (
     <section
+      id="recommended-products-section"
       className="recommended-products"
       aria-labelledby="recommended-products"
     >
@@ -171,6 +219,42 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
     products(first: 4, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...RecommendedProduct
+      }
+    }
+  }
+` as const;
+
+const MIELES_MENU_QUERY = `#graphql
+  query MielesMenu($menuHandle: String!, $country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    menu(handle: $menuHandle) {
+      id
+      items {
+        id
+        title
+        url
+        resourceId
+        type
+      }
+    }
+  }
+` as const;
+
+const COLLECTIONS_BY_IDS_QUERY = `#graphql
+  query CollectionsByIds($ids: [ID!]!, $country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    nodes(ids: $ids) {
+      __typename
+      ... on Collection {
+        id
+        title
+        handle
+        image {
+          url
+          altText
+          width
+          height
+        }
       }
     }
   }
