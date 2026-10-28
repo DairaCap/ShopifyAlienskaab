@@ -83,7 +83,12 @@ export default function HeroVideo() {
       )}
 
       {/* Hint de scroll — borde inferior de la pantalla */}
-      <div className="hero-scroll-hint" aria-hidden="true">
+      <div
+        className="hero-scroll-hint"
+        aria-hidden="true"
+        onClick={handleVideoEnded}
+        style={{ cursor: 'pointer', pointerEvents: 'all' }}
+      >
         <span>Continuar</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <polyline points="6 9 12 15 18 9" />

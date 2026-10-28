@@ -38,8 +38,8 @@ function splitTitle(title: string): [string, string] {
   return [words.join(' '), last.toUpperCase()];
 }
 
-// Tipo de dirección del gesto
-type Direction = 'down' | 'up';
+// Tipo de movimiento de la portada
+type MotionDirection = 'sube' | 'baja';
 
 export default function CollectionsShowcase({
   collections,
@@ -48,7 +48,6 @@ export default function CollectionsShowcase({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [textExiting, setTextExiting] = useState(false);
-  // Incluimos la dirección en el estado de imagen para usar la animación correcta
   const [imageState, setImageState] = useState<
     'idle' | 'exiting-down' | 'exiting-up' | 'entering-from-top' | 'entering-from-bottom'
   >('idle');
@@ -57,122 +56,221 @@ export default function CollectionsShowcase({
   const transitioning = useRef(false);
   const lastWheelTime = useRef(0);
   const touchStartY = useRef(0);
+  const isLeaving = useRef(false);
+
+  // Mantenemos una referencia mutable siempre sincronizada con currentIndex
+  const currentIndexRef = useRef(currentIndex);
+  useEffect(() => {
+    currentIndexRef.current = currentIndex;
+  }, [currentIndex]);
 
   const goTo = useCallback(
-    (nextIndex: number, dir: Direction) => {
+    (nextIndex: number, dir: MotionDirection) => {
       if (transitioning.current) return;
 
-      // Scroll abajo en la última → salir por abajo
+      // Si está en la última colección y vuelve a scrollear hacia adelante → salir a la siguiente sección
       if (nextIndex >= collections.length) {
+        isLeaving.current = true;
         onExitBottom?.();
+        setTimeout(() => {
+          isLeaving.current = false;
+        }, 1200);
         return;
       }
 
-      // Scroll arriba en la primera → volver al Hero (elemento previo en el DOM)
+      // Si está en la primera colección y scrollear hacia atrás → volver al Hero
       if (nextIndex < 0) {
+        isLeaving.current = true;
         const prevSection = containerRef.current?.previousElementSibling as HTMLElement | null;
         if (prevSection) {
           prevSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         } else {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        setTimeout(() => {
+          isLeaving.current = false;
+        }, 1200);
         return;
       }
 
       transitioning.current = true;
       setIsTransitioning(true);
 
-      // 1. Iniciar fade-out del texto + imagen sale en la dirección del gesto
-      //    Scroll abajo → imagen actual baja (exit-down), nueva entra desde arriba (from-top)
-      //    Scroll arriba → imagen actual sube (exit-up), nueva entra desde abajo (from-bottom)
+      // Transición de textos e imágenes:
+      // - dir === 'sube': portada sube (sale hacia arriba, nueva entra desde abajo)
+      // - dir === 'baja': portada baja (sale hacia abajo, nueva entra desde arriba)
       setTextExiting(true);
-      setImageState(dir === 'down' ? 'exiting-down' : 'exiting-up');
+      setImageState(dir === 'sube' ? 'exiting-up' : 'exiting-down');
 
-      // 2. Tras 420ms: cambiar slide + datos
       setTimeout(() => {
         setCurrentIndex(nextIndex);
         setTextExiting(false);
-        setImageState(dir === 'down' ? 'entering-from-top' : 'entering-from-bottom');
-      }, 420);
+        setImageState(dir === 'sube' ? 'entering-from-bottom' : 'entering-from-top');
+      }, 320);
 
-      // 3. Liberar tras completar entrada
       setTimeout(() => {
         setImageState('idle');
         setIsTransitioning(false);
         transitioning.current = false;
-      }, 1050);
+      }, 680);
     },
     [collections.length, onExitBottom],
   );
 
-  // ---- Wheel ----
+  // ---- Autocentrado al invadir la mitad (50%) del área desde arriba o abajo ----
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    let centeringTimeout: NodeJS.Timeout | null = null;
+    let isCentering = false;
 
-    const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
-      const now = Date.now();
-      if (now - lastWheelTime.current < 900) return;
-      if (Math.abs(e.deltaY) < 30) return;
-      lastWheelTime.current = now;
+    const checkAutoCenter = () => {
+      const el = containerRef.current;
+      if (!el || isLeaving.current) return;
 
-      if (e.deltaY > 0) {
-        goTo(currentIndex + 1, 'down');
-      } else {
-        goTo(currentIndex - 1, 'up');
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      const visibleRatio = visibleHeight / Math.max(rect.height, 1);
+
+      // Si la sección queda fuera de vista, reseteamos flags
+      if (visibleRatio < 0.15) {
+        isLeaving.current = false;
+        return;
+      }
+
+      // Al invadir el 50% o más del área y no estar ya centrada
+      if (visibleRatio >= 0.5 && Math.abs(rect.top) > 15 && !isCentering) {
+        isCentering = true;
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (centeringTimeout) clearTimeout(centeringTimeout);
+        centeringTimeout = setTimeout(() => {
+          isCentering = false;
+        }, 800);
       }
     };
 
-    el.addEventListener('wheel', onWheel, { passive: false });
-    return () => el.removeEventListener('wheel', onWheel);
-  }, [currentIndex, goTo]);
+    window.addEventListener('scroll', checkAutoCenter, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', checkAutoCenter);
+      if (centeringTimeout) clearTimeout(centeringTimeout);
+    };
+  }, []);
 
-  // ---- Touch ----
+  // ---- Captura y Atrapado del Scroll (Wheel) sobre las categorías ----
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      const el = containerRef.current;
+      if (!el || isLeaving.current) return;
 
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      const visibleRatio = visibleHeight / Math.max(rect.height, 1);
+
+      // Si la sección de categorías domina la vista (>= 45%), ATRAPA el scroll
+      if (visibleRatio >= 0.45) {
+        // Asegurar que la pantalla esté centrada
+        if (Math.abs(rect.top) > 10) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Siempre prevenimos el scroll nativo de la página para que pase por todas las categorías
+        e.preventDefault();
+
+        const now = Date.now();
+        if (now - lastWheelTime.current < 400) return;
+        if (Math.abs(e.deltaY) < 15) return;
+        lastWheelTime.current = now;
+
+        if (e.deltaY > 0) {
+          // Gesto hacia arriba / avance -> portada sube, siguiente categoría
+          goTo(currentIndexRef.current + 1, 'sube');
+        } else {
+          // Gesto hacia abajo / retroceso -> portada baja, categoría anterior
+          goTo(currentIndexRef.current - 1, 'baja');
+        }
+      }
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    return () => window.removeEventListener('wheel', onWheel);
+  }, [goTo]);
+
+  // ---- Captura y Atrapado del Scroll en Pantallas Táctiles (Touch) ----
+  useEffect(() => {
     const onTouchStart = (e: TouchEvent) => {
       touchStartY.current = e.touches[0].clientY;
     };
 
-    const onTouchEnd = (e: TouchEvent) => {
-      const delta = touchStartY.current - e.changedTouches[0].clientY;
-      if (Math.abs(delta) < 40) return;
-      if (delta > 0) {
-        goTo(currentIndex + 1, 'down');
-      } else {
-        goTo(currentIndex - 1, 'up');
+    const onTouchMove = (e: TouchEvent) => {
+      const el = containerRef.current;
+      if (!el || isLeaving.current) return;
+
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      const visibleRatio = visibleHeight / Math.max(rect.height, 1);
+
+      // Si está en la sección de categorías, atrapa el movimiento táctil
+      if (visibleRatio >= 0.45 && e.cancelable) {
+        e.preventDefault();
       }
     };
 
-    el.addEventListener('touchstart', onTouchStart, { passive: true });
-    el.addEventListener('touchend', onTouchEnd, { passive: true });
-    return () => {
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchend', onTouchEnd);
-    };
-  }, [currentIndex, goTo]);
+    const onTouchEnd = (e: TouchEvent) => {
+      const el = containerRef.current;
+      if (!el || isLeaving.current) return;
 
-  // ---- Keyboard ----
+      const rect = el.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      const visibleRatio = visibleHeight / Math.max(rect.height, 1);
+
+      if (visibleRatio < 0.45) return;
+
+      const delta = touchStartY.current - e.changedTouches[0].clientY;
+      if (Math.abs(delta) < 30) return;
+
+      if (delta > 0) {
+        // Deslizar hacia arriba -> portada sube, siguiente categoría
+        goTo(currentIndexRef.current + 1, 'sube');
+      } else {
+        // Deslizar hacia abajo -> portada baja, categoría anterior
+        goTo(currentIndexRef.current - 1, 'baja');
+      }
+    };
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+    };
+  }, [goTo]);
+
+  // ---- Navegación por Teclado ----
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (!containerRef.current) return;
+      if (!containerRef.current || isLeaving.current) return;
       const rect = containerRef.current.getBoundingClientRect();
-      if (rect.top > 100 || rect.bottom < 0) return;
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, vh) - Math.max(rect.top, 0));
+      const visibleRatio = visibleHeight / Math.max(rect.height, 1);
+
+      if (visibleRatio < 0.45) return;
 
       if (e.key === 'ArrowDown' || e.key === 'PageDown') {
         e.preventDefault();
-        goTo(currentIndex + 1, 'down');
+        goTo(currentIndexRef.current + 1, 'sube');
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
-        goTo(currentIndex - 1, 'up');
+        goTo(currentIndexRef.current - 1, 'baja');
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [currentIndex, goTo]);
+  }, [goTo]);
 
   if (!collections || collections.length === 0) return null;
 
@@ -181,14 +279,13 @@ export default function CollectionsShowcase({
   const [subtitle, mainTitle] = splitTitle(collection.title);
   const isLast = currentIndex === collections.length - 1;
 
-  // Clase CSS de la imagen según el estado
   const imageClass = (() => {
     switch (imageState) {
-      case 'exiting-down':      return ' is-exiting-down';
-      case 'exiting-up':        return ' is-exiting-up';
-      case 'entering-from-top': return ' is-entering-from-top';
-      case 'entering-from-bottom': return ' is-entering-from-bottom';
-      default:                  return '';
+      case 'exiting-down':          return ' is-exiting-down';
+      case 'exiting-up':            return ' is-exiting-up';
+      case 'entering-from-top':     return ' is-entering-from-top';
+      case 'entering-from-bottom':  return ' is-entering-from-bottom';
+      default:                      return '';
     }
   })();
 
@@ -271,7 +368,7 @@ export default function CollectionsShowcase({
           <button
             key={col.id}
             className={`collections-showcase__dot${i === currentIndex ? ' is-active' : ''}`}
-            onClick={() => goTo(i, i > currentIndex ? 'down' : 'up')}
+            onClick={() => goTo(i, i > currentIndex ? 'sube' : 'baja')}
             aria-label={`Ver colección ${col.title}`}
             aria-current={i === currentIndex ? 'true' : undefined}
             disabled={isTransitioning}
@@ -280,7 +377,12 @@ export default function CollectionsShowcase({
       </nav>
 
       {/* Hint en el borde inferior de la pantalla */}
-      <div className="collections-showcase__scroll-hint" aria-hidden="true">
+      <div
+        className="collections-showcase__scroll-hint"
+        aria-hidden="true"
+        onClick={() => goTo(currentIndex + 1, 'sube')}
+        style={{ cursor: 'pointer', pointerEvents: 'all' }}
+      >
         <span>{isLast ? 'Explorar' : 'Siguiente'}</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <polyline points="6 9 12 15 18 9" />

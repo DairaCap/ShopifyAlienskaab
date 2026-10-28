@@ -10,6 +10,8 @@ import {ProductItem} from '~/components/ProductItem';
 import {MockShopNotice} from '~/components/MockShopNotice';
 import CollectionsShowcase from '~/components/home/CollectionsShowcase';
 import type {ShowcaseCollection} from '~/components/home/CollectionsShowcase';
+import AwardsSection from '~/components/home/AwardsSection';
+import type {AwardItem} from '~/components/home/AwardsSection';
 
 export const meta: Route.MetaFunction = () => {
   return [{title: 'Alienskaab | Hidromieles Artesanales'}];
@@ -73,10 +75,29 @@ async function loadCriticalData({context}: Route.LoaderArgs) {
     console.error('Error fetching mieles menu/collections:', error);
   }
 
+  // Obtener metaobjetos "premios"
+  let premios: AwardItem[] = [];
+  try {
+    const premiosData = await storefront.query(PREMIOS_QUERY);
+    const nodes = (premiosData?.metaobjects?.nodes ?? []) as any[];
+    if (nodes.length > 0) {
+      premios = nodes.map((node) => ({
+        id: node.id,
+        handle: node.handle,
+        nombre: node.nombre?.value || '',
+        descripcion: node.descripcion?.value || '',
+        imagen: node.imagen?.reference?.image ?? null,
+      }));
+    }
+  } catch (error) {
+    console.error('Error fetching premios metaobjects:', error);
+  }
+
   return {
     isShopLinked: Boolean(context.env.PUBLIC_STORE_DOMAIN),
     featuredCollection: collections.nodes[0],
     mielesCollections,
+    premios,
   };
 }
 
@@ -97,6 +118,16 @@ export default function Homepage() {
   const data = useLoaderData<typeof loader>();
 
   const handleCollectionsExit = () => {
+    const awardsSection = document.getElementById('premios-alienskaab');
+    if (awardsSection) {
+      awardsSection.scrollIntoView({behavior: 'smooth', block: 'start'});
+    } else {
+      const productsSection = document.getElementById('recommended-products-section');
+      productsSection?.scrollIntoView({behavior: 'smooth', block: 'start'});
+    }
+  };
+
+  const handleAwardsExit = () => {
     const productsSection = document.getElementById('recommended-products-section');
     productsSection?.scrollIntoView({behavior: 'smooth', block: 'start'});
   };
@@ -111,6 +142,10 @@ export default function Homepage() {
           onExitBottom={handleCollectionsExit}
         />
       )}
+      <AwardsSection
+        premios={data.premios}
+        onExitBottom={handleAwardsExit}
+      />
       <RecommendedProducts products={data.recommendedProducts} />
     </div>
   );
@@ -259,3 +294,35 @@ const COLLECTIONS_BY_IDS_QUERY = `#graphql
     }
   }
 ` as const;
+
+// Obtiene los premios desde el metaobjeto "premios"
+const PREMIOS_QUERY = `#graphql
+  query Premios($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    metaobjects(type: "premios", first: 20) {
+      nodes {
+        id
+        handle
+        nombre: field(key: "nombre") {
+          value
+        }
+        descripcion: field(key: "descripcion") {
+          value
+        }
+        imagen: field(key: "imagen") {
+          reference {
+            ... on MediaImage {
+              image {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+` as const;
+

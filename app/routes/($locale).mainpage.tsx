@@ -2,6 +2,7 @@ import type { Route } from './+types/($locale).mainpage';
 import HomePage from '~/pages/HomePage';
 import type { MainPageRecommendedProductsQuery } from 'storefrontapi.generated';
 import type { ShowcaseCollection } from '~/components/home/CollectionsShowcase';
+import type { AwardItem } from '~/components/home/AwardsSection';
 
 export async function loader({ context }: Route.LoaderArgs) {
   const { storefront } = context;
@@ -21,14 +22,12 @@ export async function loader({ context }: Route.LoaderArgs) {
       variables: { menuHandle: 'mieles' },
     });
 
-    // Extraer los resourceIds de los items del menú
     const menuItems = menuData?.menu?.items ?? [];
     const collectionIds = menuItems
       .map((item: { resourceId?: string | null }) => item.resourceId)
       .filter(Boolean) as string[];
 
     if (collectionIds.length > 0) {
-      // 2. Consultar las colecciones por sus IDs para obtener imagen, título y handle
       const collectionsData = await storefront.query(COLLECTIONS_BY_IDS_QUERY, {
         variables: { ids: collectionIds },
       });
@@ -56,9 +55,28 @@ export async function loader({ context }: Route.LoaderArgs) {
     console.error('Error fetching mieles menu/collections:', error);
   }
 
+  // 2. Obtener metaobjetos "premios"
+  let premios: AwardItem[] = [];
+  try {
+    const premiosData = await storefront.query(PREMIOS_QUERY);
+    const nodes = (premiosData?.metaobjects?.nodes ?? []) as any[];
+    if (nodes.length > 0) {
+      premios = nodes.map((node) => ({
+        id: node.id,
+        handle: node.handle,
+        nombre: node.nombre?.value || '',
+        descripcion: node.descripcion?.value || '',
+        imagen: node.imagen?.reference?.image ?? null,
+      }));
+    }
+  } catch (error) {
+    console.error('Error fetching premios metaobjects:', error);
+  }
+
   return {
     recommendedProducts,
     mielesCollections,
+    premios,
   };
 }
 
@@ -129,6 +147,37 @@ const COLLECTIONS_BY_IDS_QUERY = `#graphql
           altText
           width
           height
+        }
+      }
+    }
+  }
+` as const;
+
+// Obtiene los premios desde el metaobjeto "premios"
+const PREMIOS_QUERY = `#graphql
+  query Premios($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    metaobjects(type: "premios", first: 20) {
+      nodes {
+        id
+        handle
+        nombre: field(key: "nombre") {
+          value
+        }
+        descripcion: field(key: "descripcion") {
+          value
+        }
+        imagen: field(key: "imagen") {
+          reference {
+            ... on MediaImage {
+              image {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
         }
       }
     }

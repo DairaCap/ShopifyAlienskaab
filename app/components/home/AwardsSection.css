@@ -1,0 +1,369 @@
+/* =============================================
+   AwardsSection — Medallero & Trofeo 3D Alienskaab
+   Fondo Blanco Marfil / Crema Museo (#f8f7f4)
+   ============================================= */
+
+.awards-section {
+  position: relative;
+  width: 100%;
+  height: 380vh; /* Permite el scroll suave de la línea temporal */
+  background: #f8f7f4;
+  user-select: none;
+  transition: background-color 0.6s ease;
+}
+
+/* Transición gradual de oscuro (sección anterior) a blanco marfil */
+.awards-section__top-transition {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35vh;
+  background: linear-gradient(
+    to bottom,
+    #070709 0%,
+    rgba(248, 247, 244, 0.5) 70%,
+    #f8f7f4 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Contenedor sticky que mantiene la vista fija durante el scroll del timeline */
+.awards-section__sticky {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f7f4;
+  touch-action: pan-y;
+}
+
+/* Canvas de Three.js */
+.awards-section__canvas-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  touch-action: pan-y;
+}
+
+.awards-section__canvas-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  touch-action: pan-y;
+}
+
+/* Iluminación sutil de fondo estilo galería de arte */
+.awards-section__background-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    circle at 50% 30%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(248, 247, 244, 0.95) 50%,
+    rgba(240, 238, 232, 1) 100%
+  );
+}
+
+/* ---- ENCABEZADO SUPERIOR DEL TROFEO ---- */
+.awards-section__hero-text {
+  position: absolute;
+  top: 13vh;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 1.5rem;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.awards-section__eyebrow {
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: clamp(0.75rem, 1.8vw, 0.9rem);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #000000;
+  font-weight: 700;
+  margin: 0 0 0.6rem;
+}
+
+.awards-section__title {
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: clamp(1.8rem, 5.5vw, 3.8rem);
+  font-weight: 900;
+  color: #000000;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  max-width: 860px;
+}
+
+.awards-section__subtitle {
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: clamp(0.9rem, 2.2vw, 1.15rem);
+  color: #222222;
+  margin-top: 0.8rem;
+  max-width: 600px;
+  font-weight: 400;
+}
+
+/* Indicación de scroll hacia la repisa */
+.awards-section__scroll-hint {
+  position: absolute;
+  bottom: 2.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  pointer-events: none;
+  animation: awards-bounce 2.2s ease-in-out infinite;
+  transition: opacity 0.3s ease;
+}
+
+.awards-section__scroll-hint span {
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #000000;
+  font-weight: 700;
+}
+
+.awards-section__scroll-hint svg {
+  color: #000000;
+}
+
+@keyframes awards-bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(8px);
+  }
+}
+
+/* ---- TOOLTIP AL PASAR EL CURSOR POR UN CUADRO ---- */
+.awards-section__hover-tooltip {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+  transform: translate(-50%, -125%);
+  background: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  padding: 0.55rem 1.1rem;
+  border-radius: 6px;
+  color: #ffffff;
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.awards-section__hover-tooltip.is-visible {
+  opacity: 1;
+  transform: translate(-50%, -140%);
+}
+
+/* =============================================
+   MODAL / DETALLE DEL PREMIO EXPANDIDO
+   Estilo Galería de Arte Contemporánea
+   ============================================= */
+.awards-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgba(248, 247, 244, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  animation: awards-modal-fade 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes awards-modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Botón flecha para retroceder en la esquina */
+.awards-modal__back-button {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  z-index: 10010;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #000000;
+  border: 1px solid #000000;
+  color: #ffffff;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.awards-modal__back-button:hover {
+  background: #222222;
+  transform: translateX(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.awards-modal__back-button svg {
+  transition: transform 0.2s ease;
+}
+
+.awards-modal__back-button:hover svg {
+  transform: translateX(-4px);
+}
+
+/* Tarjeta / Contenido del premio */
+.awards-modal__content {
+  position: relative;
+  max-width: 680px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.4rem;
+  animation: awards-modal-scale 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes awards-modal-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Nombre del premio (Arriba) */
+.awards-modal__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.awards-modal__tag {
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #000000;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.35rem 0.9rem;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.awards-modal__title {
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+  font-weight: 900;
+  color: #000000;
+  margin: 0.4rem 0 0;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Cuadro / Imagen agrandada del premio */
+.awards-modal__image-wrapper {
+  position: relative;
+  width: min(85vw, 420px);
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.18),
+    0 6px 20px rgba(0, 0, 0, 0.1);
+  border: 6px solid #1a1a1a;
+  background: #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.awards-modal__image-wrapper:hover {
+  transform: scale(1.02);
+}
+
+.awards-modal__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  background: #ffffff;
+}
+
+/* Descripción del premio (Debajo) */
+.awards-modal__description {
+  font-family: 'Mont', 'Arial', sans-serif;
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  line-height: 1.6;
+  color: #111111;
+  max-width: 580px;
+  margin: 0;
+  white-space: pre-line;
+  font-weight: 400;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 768px) {
+  .awards-section__hero-text {
+    top: 10vh;
+    padding: 0 1rem;
+  }
+
+  .awards-modal {
+    padding: 1.2rem;
+  }
+
+  .awards-modal__back-button {
+    top: 1.2rem;
+    left: 1.2rem;
+    padding: 0.55rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  .awards-modal__image-wrapper {
+    width: min(88vw, 320px);
+  }
+}
